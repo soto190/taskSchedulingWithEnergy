@@ -27,14 +27,11 @@ public class NSGAII {
 
 	public void start() {
 		population = new Solution[populationSize];
-
 		for (int ind = 0; ind < populationSize; ind++)
 			population[ind] = generateRandomSolution();
-
 	}
 
 	public Solution generateRandomSolution() {
-
 		Solution sol = new Solution(hcs.getTotalTasks(), hcs.getTotalMachines());
 		for (int task = 0; task < sol.getChromosomaSize(); task++) {
 			Machine machine = hcs
@@ -46,14 +43,11 @@ public class NSGAII {
 	}
 
 	public void sort(Solution[] population){
-		
 	}
 	
 	public static void main(String[] args) {
 		Utilities utils = new Utilities();
 		NSGAII nsgaII = new NSGAII(utils.readInstance(13), 50);
 		nsgaII.start();
-
 	}
-
 }

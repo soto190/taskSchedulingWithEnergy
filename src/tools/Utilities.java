@@ -18,10 +18,10 @@ public class Utilities {
 
 	private static BufferedReader inputReader;
 	private static File instances[];
-	private static File machinesConfig;
+	private static File machineConfigurations;
 
 	public Utilities() {
-		loadIndex();
+		loadIndexFile();
 		loadFileMachinesConfig("Machines.conf");
 	}
 
@@ -30,25 +30,27 @@ public class Utilities {
 		String path = System.getProperty("user.dir") + File.separator
 				+ "Instances" + File.separator + "Machines" + File.separator
 				+ config;
-		machinesConfig = new File(path);
+		machineConfigurations = new File(path);
 	}
 
-	private static void loadIndex() {
-
+	private static void loadIndexFile() {
 		String workPath = System.getProperty("user.dir") + File.separator
 				+ "Instances" + File.separator;
 
 		try {
+			
 			BufferedReader br = new BufferedReader(new FileReader(workPath
 					+ "Index"));
+			int numberOfInstances = toInt(br.readLine());
+			System.out.println("Number of instances in index file: " + numberOfInstances);
 
-			int totalInstances = toInt(br.readLine());
-			instances = new File[totalInstances];
+			instances = new File[numberOfInstances];
 
-			for (int i = 0; i < totalInstances; i++)
+			for (int i = 0; i < numberOfInstances; i++)
 				instances[i] = new File(workPath + br.readLine());
 
 			br.close();
+		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -64,7 +66,7 @@ public class Utilities {
 		if (indexInstance >= 13 && indexInstance <= 31)
 			return readInstanceReferencia(indexInstance);
 
-		System.err.println("No se encontro la instancia " + indexInstance);
+		System.err.println("Instance not found " + indexInstance);
 		return null;
 
 	}
@@ -129,9 +131,9 @@ public class Utilities {
 	private static void readConfigurations(HCS hcs) {
 
 		try {
-			inputReader = new BufferedReader(new FileReader(machinesConfig));
+			inputReader = new BufferedReader(new FileReader(machineConfigurations));
 
-			/** read comments line "Configuración (voltaje/velocidad)". **/
+			/** read comments line "Configuraciï¿½n (voltaje/velocidad)". **/
 			inputReader.readLine();
 
 			/** Read metadata: Max k Configurations and total machines. **/
@@ -141,8 +143,8 @@ public class Utilities {
 			int totalMachines = toInt(dataIn[1]);
 
 			/***
-			 * Repite el número de configuración de voltaje/velocidad para el
-			 * número de máquinas restantes.
+			 * Repeats the number of configurations of voltjae and speed for the next machines.
+			 * 
 			 */
 			int baseMachine = 0;
 			

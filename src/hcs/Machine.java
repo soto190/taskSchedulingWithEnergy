@@ -8,14 +8,14 @@ package hcs;
 public class Machine {
 
 	protected int id;
-	protected int kConfig;
+	protected int numberOfConfigurations;
 	/**
 	 * protected double totalExecTime = 0; protected double totalEnergy = 0;
 	 **/
 	protected double[] voltaje;
 	protected double[] speeds;
 
-	protected double[] taskExecTime;
+	protected double[] taskExecutionTime;
 	
 	protected boolean lockKConfig = false;
 
@@ -31,12 +31,12 @@ public class Machine {
 
 	public Machine(int id, int totalTasks) {
 		this.id = id;
-		this.taskExecTime = new double[totalTasks];
+		this.taskExecutionTime = new double[totalTasks];
 	}
 
 	public Machine(int id, Machine machine) {
 		this.id = id;
-		this.kConfig = machine.getkConfig();
+		this.numberOfConfigurations = machine.getkConfig();
 
 		for (int k = 0; k < machine.getkConfig(); k++)
 			this.setKConfigVoltajeAndSpeed(k, machine.getKvoltaje(k),
@@ -46,8 +46,8 @@ public class Machine {
 
 	public Machine(int id, int totalTasks, int kConfig) {
 		this.id = id;
-		this.taskExecTime = new double[totalTasks];
-		this.kConfig = kConfig;
+		this.taskExecutionTime = new double[totalTasks];
+		this.numberOfConfigurations = kConfig;
 		this.voltaje = new double[kConfig];
 		this.speeds = new double[kConfig];
 	}
@@ -66,18 +66,18 @@ public class Machine {
 	}
 
 	public int getkConfig() {
-		return kConfig;
+		return numberOfConfigurations;
 	}
 
 	public void setkConfig(int kConfig) {
 		if (lockKConfig == false) {
-			this.kConfig = kConfig;
+			this.numberOfConfigurations = kConfig;
 			lockKConfig = true;
 		}
 	}
 
 	public void addTask(int taskId, double execTime) {
-		this.taskExecTime[taskId] = execTime;
+		this.taskExecutionTime[taskId] = execTime;
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class Machine {
 	 **/
 
 	public double getExecTime(Task task) {
-		return taskExecTime[task.getId()];
+		return taskExecutionTime[task.getId()];
 	}
 
 	public double[] getVoltaje() {
@@ -159,7 +159,7 @@ public class Machine {
 
 	@Override
 	public String toString() {
-		return "Machine [id=" + id + ", kConfig=" + kConfig + "]";
+		return "Machine [id=" + id + ", kConfig=" + numberOfConfigurations + "]";
 	}
 
 }

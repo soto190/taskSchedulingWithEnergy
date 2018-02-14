@@ -15,20 +15,20 @@ public class Schedule {
 	protected int[] machinesWithMakespan;
 	protected int machineWithMinTime;
 	protected double makespan;
-	protected double minTime;
+	protected double minimumExecutionTime;
 	protected double energy;
-	protected int totalMachinesWithMakespan;
+	protected int numberOfMachinesWithMakespan;
 
-	protected int totalTasks;
-	protected int totalMachines;
+	protected int numberOfTasks;
+	protected int numberOfMachines;
 
 	public Schedule(int totaTasks, int totalMachines) {
 
 		makespan = 0;
 		energy = 0;
 
-		this.totalTasks = totaTasks;
-		this.totalMachines = totalMachines;
+		this.numberOfTasks = totaTasks;
+		this.numberOfMachines = totalMachines;
 
 		execTimeInMachine = new double[totalMachines];
 		energyInMachine = new double[totalMachines];
@@ -73,19 +73,19 @@ public class Schedule {
 	public void computeMakespanAndEnergy() {
 		makespan = 0;
 		energy = 0;
-		minTime = Integer.MAX_VALUE;
-		totalMachinesWithMakespan = 0;
+		minimumExecutionTime = Integer.MAX_VALUE;
+		numberOfMachinesWithMakespan = 0;
 		machineWithMinTime = 0;
 
-		for (int i = 0; i < totalMachines; i++) {
+		for (int i = 0; i < numberOfMachines; i++) {
 
 			if (execTimeInMachine[i] > makespan) {
 				makespan = execTimeInMachine[i];
-				machinesWithMakespan[totalMachinesWithMakespan++] = i;
+				machinesWithMakespan[numberOfMachinesWithMakespan++] = i;
 			}
 
-			if (execTimeInMachine[i] < minTime) {
-				minTime = execTimeInMachine[i];
+			if (execTimeInMachine[i] < minimumExecutionTime) {
+				minimumExecutionTime = execTimeInMachine[i];
 				machineWithMinTime = i;
 			}
 
@@ -94,11 +94,11 @@ public class Schedule {
 	}
 
 	public int getTotalTasks() {
-		return this.totalTasks;
+		return this.numberOfTasks;
 	}
 
 	public int getTotalMachines() {
-		return this.totalMachines;
+		return this.numberOfMachines;
 	}
 
 	public double getMakespan() {

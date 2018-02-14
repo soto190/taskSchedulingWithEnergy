@@ -10,13 +10,11 @@ package hcs;
 public class HCS {
 
 	protected String name;
-	protected int totalTasks;
-	protected int totalMachines;
+	protected int numberOfTasks;
+	protected int numberOfMachines;
 	protected Machine[] machine;
 	protected Task[] task;
-
 	protected int[] schedule;
-
 	protected double makespan;
 	protected double energy;
 
@@ -24,7 +22,7 @@ public class HCS {
 	 * This shouldn't be here, because this information is in the Task and
 	 * Machine class, but by the moment.
 	 **/
-	protected double[][] execTime;
+	protected double[][] processingTime;
 	
 	/**
 	 * Creates an HCS with the total of tasks and machines specified.
@@ -35,12 +33,12 @@ public class HCS {
 
 	public HCS(int totalTasks, int totalMachines) {
 
-		this.totalTasks = totalTasks;
-		this.totalMachines = totalMachines;
+		this.numberOfTasks = totalTasks;
+		this.numberOfMachines = totalMachines;
 		task = new Task[totalTasks];
 		machine = new Machine[totalMachines];
 		schedule = new int[totalTasks];
-		execTime = new double[totalTasks][totalMachines];
+		processingTime = new double[totalTasks][totalMachines];
 	}
 
 	/**
@@ -68,9 +66,7 @@ public class HCS {
 	 * @param machine The machine to be added.
 	 */
 	public void addMachine(Machine machine) {
-
 		this.machine[machine.getId()] = machine;
-
 	}
 
 	/**
@@ -127,9 +123,9 @@ public class HCS {
 		if (this.task[idTask] == null)
 			this.task[idTask] = new Task(idTask);
 		if (this.machine[idMachine] == null)
-			this.machine[idMachine] = new Machine(idMachine, totalTasks);
+			this.machine[idMachine] = new Machine(idMachine, numberOfTasks);
 
-		this.execTime[idTask][idMachine] = execTime;
+		this.processingTime[idTask][idMachine] = execTime;
 		this.machine[idMachine].addTask(idTask, execTime);
 	}
 
