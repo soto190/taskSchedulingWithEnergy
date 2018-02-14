@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 *.class
 
 # Package Files #
 *.jar
 *.war
 *.ear
-=======
 /bin
->>>>>>> origin/master
