@@ -1,16 +1,18 @@
 package tools;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import hcs.HCS;
 import hcs.Machine;
 
 /**
- * 
+ *
  * @author soto190
  *
  */
@@ -18,10 +20,11 @@ public class Utilities {
 
 	private static BufferedReader inputReader;
 	private static File instances[];
-	private static File machineConfigurations;
+	private static File machinesConfig;
+	private static BufferedReader br;
 
 	public Utilities() {
-		loadIndexFile();
+		loadIndex();
 		loadFileMachinesConfig("Machines.conf");
 	}
 
@@ -30,27 +33,25 @@ public class Utilities {
 		String path = System.getProperty("user.dir") + File.separator
 				+ "Instances" + File.separator + "Machines" + File.separator
 				+ config;
-		machineConfigurations = new File(path);
+		machinesConfig = new File(path);
 	}
 
-	private static void loadIndexFile() {
+	private static void loadIndex() {
+
 		String workPath = System.getProperty("user.dir") + File.separator
 				+ "Instances" + File.separator;
 
 		try {
-			
 			BufferedReader br = new BufferedReader(new FileReader(workPath
 					+ "Index"));
-			int numberOfInstances = toInt(br.readLine());
-			System.out.println("Number of instances in index file: " + numberOfInstances);
 
-			instances = new File[numberOfInstances];
+			int totalInstances = toInt(br.readLine());
+			instances = new File[totalInstances];
 
-			for (int i = 0; i < numberOfInstances; i++)
+			for (int i = 0; i < totalInstances; i++)
 				instances[i] = new File(workPath + br.readLine());
 
 			br.close();
-		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -60,13 +61,13 @@ public class Utilities {
 
 	public HCS readInstance(int indexInstance) {
 
-		if (indexInstance >= 0 && indexInstance <= 12)
+		if (indexInstance >= 0 && indexInstance <= 11)
 			return readInstanceBraunt(indexInstance);
 
-		if (indexInstance >= 13 && indexInstance <= 31)
+		if (indexInstance >= 12 && indexInstance <= 52)
 			return readInstanceReferencia(indexInstance);
 
-		System.err.println("Instance not found " + indexInstance);
+		System.err.println("No se encontro la instancia " + indexInstance);
 		return null;
 
 	}
@@ -86,7 +87,8 @@ public class Utilities {
 
 			for (int task = 0; task < 512; task++)
 				for (int machine = 0; machine < 16; machine++)
-					hcs.addExecTime(task, machine, toDouble(inputReader.readLine()));
+					hcs.addExecTime(task, machine,
+							toDouble(inputReader.readLine()));
 
 			inputReader.close();
 
@@ -102,20 +104,23 @@ public class Utilities {
 	private HCS readInstanceReferencia(int indexInstance) {
 		HCS hcs = null;
 		try {
+
+			System.out.println("Reading instance: " + instances[indexInstance] +"\n");
+
 			inputReader = new BufferedReader(new FileReader(
 					instances[indexInstance]));
-			
+
 			inputReader.readLine();
 			String[] dataIn = inputReader.readLine().split("\\s+");
 			hcs = new HCS(toInt(dataIn[0]), toInt(dataIn[1]));
-
+			hcs.setName(instances[indexInstance].getName());
 			inputReader.readLine();
 			for (int task = 0; task < hcs.getTotalTasks(); task++) {
 				dataIn = inputReader.readLine().split("\\s+");
-				for (int machine = 0; machine < hcs.getTotalMachines(); machine++) 
+				for (int machine = 0; machine < hcs.getTotalMachines(); machine++)
 					hcs.addExecTime(task, machine, toDouble(dataIn[machine]));
 			}
-			
+
 			inputReader.close();
 			readConfigurations(hcs);
 
@@ -131,7 +136,7 @@ public class Utilities {
 	private static void readConfigurations(HCS hcs) {
 
 		try {
-			inputReader = new BufferedReader(new FileReader(machineConfigurations));
+			inputReader = new BufferedReader(new FileReader(machinesConfig));
 
 			/** read comments line "Configuraci�n (voltaje/velocidad)". **/
 			inputReader.readLine();
@@ -139,15 +144,15 @@ public class Utilities {
 			/** Read metadata: Max k Configurations and total machines. **/
 			String dataV[];
 			String[] dataIn = inputReader.readLine().split("\\s+");
+
 			int maxKconfig = toInt(dataIn[0]);
 			int totalMachines = toInt(dataIn[1]);
-
+			hcs.setMaxKConfig(maxKconfig);
 			/***
-			 * Repeats the number of configurations of voltjae and speed for the next machines.
-			 * 
+			 * Repite el n�mero de configuraci�n de voltaje/velocidad para el
+			 * n�mero de m�quinas restantes.
 			 */
 			int baseMachine = 0;
-			
 
 			for (int k = 0; k < maxKconfig; k++) {
 				dataIn = inputReader.readLine().split("\\s+");
@@ -163,7 +168,7 @@ public class Utilities {
 									.getTotalTasks(), maxKconfig));
 
 						if (voltaje == Double.MAX_VALUE)
-							hcs.getMachine(machine).setkConfig(k);
+							hcs.getMachine(machine).setTotalConfig(k);
 						else
 							hcs.getMachine(machine).setKConfigVoltajeAndSpeed(
 									k, voltaje, speed);
@@ -179,8 +184,8 @@ public class Utilities {
 							hcs.getMachine(machine).copyKConfig(k,
 									hcs.getMachine(baseMachine));
 						else
-							hcs.getMachine(machine).setkConfig(
-									hcs.getMachine(baseMachine).getkConfig());
+							hcs.getMachine(machine).setTotalConfig(
+									hcs.getMachine(baseMachine).getTotalConfig());
 
 						if (++baseMachine == totalMachines)
 							baseMachine = 0;
@@ -203,6 +208,78 @@ public class Utilities {
 		if (sn.equals("inf"))
 			return Double.MAX_VALUE;
 		return Double.parseDouble(sn);
+	}
+
+	public static void printArray(int[] array) {
+		System.out.print("[");
+		for (int i = 0; i < array.length; i++)
+			System.out.printf("%2d" + (i < array.length - 1 ? ", " : "]\n"),
+					array[i]);
+	}
+
+	public static void printArray(double[] array) {
+		System.out.print(" [");
+		for (int i = 0; i < array.length; i++)
+			System.out.printf("%6.6f" + (i < array.length - 1 ? ", " : "]\n"),
+					array[i]);
+	}
+
+	public static double[] getMaxValues(String file) throws IOException {
+
+		FileReader fr = new FileReader(file);
+		br = new BufferedReader(fr);
+
+		String[] data = br.readLine().split("\\s+");
+
+		int dimension = data.length;
+		double[] max = new double[dimension];
+		double[] val = new double[dimension];
+
+		max[0] = toDouble(data[0]);
+		max[1] = toDouble(data[1]);
+
+		String lin = "";
+		while ((lin = br.readLine()) != null) {
+			data = lin.split("\\s+");
+
+			for (int i = 0; i < dimension; i++) {
+				val[i] = toDouble(data[i]);
+
+				if (val[i] > max[i])
+					max[i] = val[i];
+			}
+		}
+		return max;
+	}
+
+	public static void saveResultsExperiment(String file, String arr[]) {
+		try {
+
+			BufferedWriter pw = new BufferedWriter(new FileWriter(file, true));
+			String s = "";
+
+			for (int i = 0; i < arr.length; i++)
+				s += arr[i];
+
+			pw.write(s);
+			pw.flush();
+			pw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static double truncate(double value, int places) {
+		if (places < 0) {
+			throw new IllegalArgumentException();
+		}
+
+		long factor = (long) Math.pow(10, places);
+		value *= factor;
+		long tmp = (long) value;
+		return (double) tmp / factor;
 	}
 
 }

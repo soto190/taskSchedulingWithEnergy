@@ -1,14 +1,14 @@
 package hcs;
 
 /**
- * 
+ *
  * This class represents a Task from the HCSP ( Heterogenous Computing System
  * Problem).
- * 
+ *
  * @author soto190
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class Task {
 
@@ -20,7 +20,7 @@ public class Task {
 
 	/**
 	 * Creates a task with the id.
-	 * 
+	 *
 	 * @param id
 	 *            Integer with the id of the task.
 	 */
@@ -29,7 +29,7 @@ public class Task {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Integer with the task Id.
 	 */
 	public int getId() {
@@ -47,7 +47,7 @@ public class Task {
 
 	/**
 	 * Depends of the machine assigned.
-	 * 
+	 *
 	 * @return Double with the current execution time of the task.
 	 */
 	public double getCurrentExecTime() {
@@ -55,7 +55,7 @@ public class Task {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param machine
 	 *            The machine in which will be execute the current task.
 	 * @param kConfig
@@ -68,7 +68,7 @@ public class Task {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Id of the assigned machine.
 	 */
 	public int getAssignedMachine() {
@@ -77,15 +77,19 @@ public class Task {
 
 	/**
 	 * Assigns the machin in which this task will be execute.
-	 * 
+	 *
 	 * @param machine
 	 */
 	public void setAssingedMachine(Machine machine) {
 		this.assignedMachine = machine.getId();
 	}
-	
+
+	public void setAssingedMachine(int machine) {
+		this.assignedMachine = machine;
+	}
+
 	/**
-	 * 
+	 *
 	 * @return Integer with the k configurations.
 	 */
 
@@ -101,11 +105,18 @@ public class Task {
 		return this.energyConsumed;
 	}
 
-	@Override
+	public void copyThis(Task task) {
+		this.assignedMachine = task.getAssignedMachine();
+		this.currentExecTime = task.getCurrentExecTime();
+		this.energyConsumed = task.getCurrentEnergy();
+		this.kConfig = task.getkConfig();
+	}
+
 	public String toString() {
-		return "Task [id=" + id + ", assignedMachine=" + assignedMachine
-				+ ", currentExecTime=" + currentExecTime + ", kConfig="
-				+ kConfig + "]";
+
+		return String
+				.format("Task [id=%4d, assignedMachine=%2d, currentExecTime=%6.6f, kConfig=%2d]",
+						id, assignedMachine, currentExecTime, kConfig);
 	}
 
 }

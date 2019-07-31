@@ -1,10 +1,13 @@
 package hcs;
 
+import nsgaII.Solution;
+
 /**
- * 
+ *
  * @author soto190
- * 
+ *
  */
+
 public class Schedule {
 
 	protected Task[] schedule;
@@ -15,20 +18,20 @@ public class Schedule {
 	protected int[] machinesWithMakespan;
 	protected int machineWithMinTime;
 	protected double makespan;
-	protected double minimumExecutionTime;
+	protected double minTime;
 	protected double energy;
-	protected int numberOfMachinesWithMakespan;
+	protected int totalMachinesWithMakespan;
 
-	protected int numberOfTasks;
-	protected int numberOfMachines;
+	protected int totalTasks;
+	protected int totalMachines;
 
 	public Schedule(int totaTasks, int totalMachines) {
 
 		makespan = 0;
 		energy = 0;
 
-		this.numberOfTasks = totaTasks;
-		this.numberOfMachines = totalMachines;
+		this.totalTasks = totaTasks;
+		this.totalMachines = totalMachines;
 
 		execTimeInMachine = new double[totalMachines];
 		energyInMachine = new double[totalMachines];
@@ -40,72 +43,105 @@ public class Schedule {
 	}
 
 	public void setTaskInMachine(Task task, Machine machine, int kConfig) {
-		if (this.schedule[task.getId()] == null) {
-			this.schedule[task.getId()] = new Task(task.getId());
-			this.schedule[task.getId()].setInMachine(machine, kConfig);
+		int t = task.getId(), m = machine.getId();
 
-			this.execTimeInMachine[machine.getId()] += this.schedule[task
-					.getId()].getCurrentExecTime();
+		if (this.schedule[t] == null) {
 
-			this.energyInMachine[machine.getId()] += this.schedule[task.getId()]
-					.getCurrentEnergy();
+			this.schedule[t] = new Task(t);
+			this.schedule[t].setInMachine(machine, kConfig);
 
-			this.energy += this.schedule[task.getId()].getCurrentEnergy();
+			this.execTimeInMachine[m] += this.schedule[t].getCurrentExecTime();
+			this.energyInMachine[m] += this.schedule[t].getCurrentEnergy();
+			this.energy += this.schedule[t].getCurrentEnergy();
+
 		} else
-			changeTaskToMachine(this.schedule[task.getId()], machine, kConfig);
+			changeTaskToMachine(this.schedule[t], machine, kConfig);
 
 	}
 
-	public void changeTaskToMachine(Task task, Machine machine, int kConfig) {
+	/**
+	 *
+	 * @param task Tarea a modificar.
+	 * @param machine M�quina a usar.
+	 * @param kConfig configuraci�n a usar.
+	 */
+	private void changeTaskToMachine(Task task, Machine machine, int kConfig) {
+
+		/**
+		 * Decrementa con la asignaci�n actual.
+		 */
 		this.execTimeInMachine[task.getAssignedMachine()] -= task
 				.getCurrentExecTime();
 		this.energyInMachine[task.getAssignedMachine()] -= task
 				.getCurrentEnergy();
+		this.energy -= task.getCurrentEnergy();
 
 		this.schedule[task.getId()].setInMachine(machine, kConfig);
 
-		this.execTimeInMachine[task.getAssignedMachine()] -= task
+		/**
+		 * Incrementa con la nueva asignaci�n.
+		 */
+		this.execTimeInMachine[task.getAssignedMachine()] += task
 				.getCurrentExecTime();
-		this.energyInMachine[task.getAssignedMachine()] -= task
+		this.energyInMachine[task.getAssignedMachine()] += task
 				.getCurrentEnergy();
-	}
-
-	public void computeMakespanAndEnergy() {
-		makespan = 0;
-		energy = 0;
-		minimumExecutionTime = Integer.MAX_VALUE;
-		numberOfMachinesWithMakespan = 0;
-		machineWithMinTime = 0;
-
-		for (int i = 0; i < numberOfMachines; i++) {
-
-			if (execTimeInMachine[i] > makespan) {
-				makespan = execTimeInMachine[i];
-				machinesWithMakespan[numberOfMachinesWithMakespan++] = i;
-			}
-
-			if (execTimeInMachine[i] < minimumExecutionTime) {
-				minimumExecutionTime = execTimeInMachine[i];
-				machineWithMinTime = i;
-			}
-
-			energy += energyInMachine[i];
-		}
+		this.energy += task.getCurrentEnergy();
 	}
 
 	public int getTotalTasks() {
-		return this.numberOfTasks;
+		return this.totalTasks;
 	}
 
 	public int getTotalMachines() {
-		return this.numberOfMachines;
+		return this.totalMachines;
 	}
 
 	public double getMakespan() {
-		return this.getMakespan();
+		return this.makespan;
 	}
 
 	public double getEnergy() {
-		return this.getEnergy();
+		return this.energy;
 	}
+
+	public int getTotalMachinesWithMakespan() {
+		return this.totalMachinesWithMakespan;
+	}
+
+	public int getMachineWithMakespan(int index) {
+		return this.machinesWithMakespan[index];
+	}
+
+	/**
+	 *
+	 * @return the makespan and energy.
+	 */
+	public double[] getObjectives() {
+
+		return new double[] { this.makespan, this.energy };
+
+	}
+
+	public void setMakespan(double makespan) {
+		this.makespan = makespan;
+	}
+
+	public void setEnergy(double energy) {
+		this.energy = energy;
+	}
+
+	public void resetObjectives() {
+		this.makespan = 0;
+		this.energy = 0;
+	}
+
+	public double increaseEnergy(double increment) {
+		this.energy += increment;
+		return this.energy;
+	}
+
+	public int compare(Solution sol1, Solution sol2) {
+		return 0;
+	}
+
 }

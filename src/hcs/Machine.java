@@ -1,27 +1,27 @@
 package hcs;
 
 /**
- * 
+ *
  * @author soto190
- * 
+ *
  */
 public class Machine {
 
 	protected int id;
-	protected int numberOfConfigurations;
+	protected int totalConfig;
 	/**
 	 * protected double totalExecTime = 0; protected double totalEnergy = 0;
 	 **/
 	protected double[] voltaje;
 	protected double[] speeds;
 
-	protected double[] taskExecutionTime;
-	
+	protected double[] taskExecTime;
+
 	protected boolean lockKConfig = false;
 
 	/**
 	 * protected int totalTask = 0;
-	 * 
+	 *
 	 * protected Task[] assignedTask = new Task[512];
 	 **/
 
@@ -31,14 +31,20 @@ public class Machine {
 
 	public Machine(int id, int totalTasks) {
 		this.id = id;
-		this.taskExecutionTime = new double[totalTasks];
+		this.taskExecTime = new double[totalTasks];
 	}
+
+	/**
+	 * Create a new machine with the Voltaje and Speed configurations of the given machine,
+	 * @param id
+	 * @param machine
+	 */
 
 	public Machine(int id, Machine machine) {
 		this.id = id;
-		this.numberOfConfigurations = machine.getkConfig();
+		this.totalConfig = machine.getTotalConfig();
 
-		for (int k = 0; k < machine.getkConfig(); k++)
+		for (int k = 0; k < machine.getTotalConfig(); k++)
 			this.setKConfigVoltajeAndSpeed(k, machine.getKvoltaje(k),
 					machine.getKspeed(k));
 
@@ -46,59 +52,43 @@ public class Machine {
 
 	public Machine(int id, int totalTasks, int kConfig) {
 		this.id = id;
-		this.taskExecutionTime = new double[totalTasks];
-		this.numberOfConfigurations = kConfig;
+		this.taskExecTime = new double[totalTasks];
+		this.totalConfig = kConfig;
 		this.voltaje = new double[kConfig];
 		this.speeds = new double[kConfig];
 	}
 
-	/**
-	 * public void addTask(Task task) { totalTask++; assignedTask[task.getId()]
-	 * = task; }
-	 **/
-	/**
-	 * public void removeTask(Task task) { if (assignedTask[task.getId()] !=
-	 * null) { totalTask--; assignedTask[task.getId()] = null; totalExecTime -=
-	 * task.getCurrentExecTime(); } }
-	 **/
 	public int getId() {
 		return id;
 	}
 
-	public int getkConfig() {
-		return numberOfConfigurations;
+	public int getTotalConfig() {
+		return totalConfig;
 	}
 
-	public void setkConfig(int kConfig) {
+	public void setTotalConfig(int kConfig) {
 		if (lockKConfig == false) {
-			this.numberOfConfigurations = kConfig;
+			this.totalConfig = kConfig;
 			lockKConfig = true;
 		}
 	}
 
-	public void addTask(int taskId, double execTime) {
-		this.taskExecutionTime[taskId] = execTime;
+	public void setMaxKConfig(int kConfig){
+		this.totalConfig = kConfig;
+		this.voltaje = new double[kConfig];
+		this.speeds = new double[kConfig];
 	}
 
-	/**
-	 * public double getTotalExecTime() { return totalExecTime; }
-	 * 
-	 * public void setTotalExecTime(double totalExecTime) { this.totalExecTime =
-	 * totalExecTime; }
-	 * 
-	 * public void increaseExecTime(double execTime) { this.totalExecTime +=
-	 * execTime; }
-	 * 
-	 * public double getTotalEnergy() { return totalEnergy; }
-	 * 
-	 * public void setTotalEnergy(double totalEnergy) { this.totalEnergy =
-	 * totalEnergy; }
-	 * 
-	 * public void increaseEnergy(double energy) { this.totalEnergy += energy; }
-	 **/
+	public void addTask(int taskId, double execTime) {
+		this.taskExecTime[taskId] = execTime;
+	}
 
 	public double getExecTime(Task task) {
-		return taskExecutionTime[task.getId()];
+		return taskExecTime[task.getId()];
+	}
+
+	public double getExecTime(int task) {
+		return taskExecTime[task];
 	}
 
 	public double[] getVoltaje() {
@@ -116,6 +106,10 @@ public class Machine {
 
 	public double getKspeed(int k) {
 		return speeds[k];
+	}
+
+	public int getTotalKConfig() {
+		return totalConfig;
 	}
 
 	public void setKspeed(int k, double speed) {
@@ -145,21 +139,20 @@ public class Machine {
 		this.setKConfigVoltajeAndSpeed(k, machine.getKvoltaje(k),
 				machine.getKspeed(k));
 	}
-	
+
 	public boolean lockedConfig(){
 		return this.lockKConfig;
 	}
 
 	/**
 	 * public Task[] getAssignedTask() { return assignedTask; }
-	 * 
+	 *
 	 * public void setAssignedTask(Task[] assignedTask) { for (int i = 0; i <
 	 * assignedTask.length; i++) this.assignedTask[i] = assignedTask[i]; }
 	 **/
 
-	@Override
 	public String toString() {
-		return "Machine [id=" + id + ", kConfig=" + numberOfConfigurations + "]";
+		return "Machine [id=" + id + ", kConfig=" + totalConfig + "]";
 	}
 
 }
